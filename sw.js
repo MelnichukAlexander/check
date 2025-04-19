@@ -12,56 +12,21 @@ const urlsToCache = [
   '/images/icon-192.png'
 ];
 
-self.addEventListener('install', event => {
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        return cache.addAll(urlsToCache);
-      })
-  );
+self.addEventListener("install", e => {
+  e.waitUntil(caches.open(CACHE_NAME).then(c => c.addAll(FILES)));
+  self.skipWaiting();
 });
-
-self.addEventListener('fetch', event => {
-    event.respondWith(
-      caches.match(event.request)
-        .then(response => {
-          // Возвращаем кэшированный ресурс, если он есть
-          if (response) {
-            return response;
-          }
-          
-          // Для навигационных запросов возвращаем offline.html
-          if (event.request.mode === 'navigate') {
-            return caches.match('/offline.html');
-          }
-          
-          // Пробуем выполнить сетевой запрос
-          return fetch(event.request).catch(() => {
-            // Если это не навигационный запрос, но ресурс не найден в кэше
-            // Можно вернуть заглушку или ничего не возвращать
-            return new Response('Оффлайн-режим', {
-              status: 503,
-              statusText: 'Service Unavailable',
-              headers: new Headers({
-                'Content-Type': 'text/plain'
-              })
-            });
-          });
-        })
-    );
-  });
-
-self.addEventListener('activate', event => {
-  const cacheWhitelist = [CACHE_NAME];
-  event.waitUntil(
-    caches.keys().then(cacheNames => {
-      return Promise.all(
-        cacheNames.map(cacheName => {
-          if (cacheWhitelist.indexOf(cacheName) === -1) {
-            return caches.delete(cacheName);
-          }
-        })
-      );
-    })
+self.addEventListener("activate", e => {
+  e.waitUntil(
+    caches.keys().then(keys =>
+      Promise.all(keys.map(k => k !== CACHE_NAME && caches.delete(k)))
+    )
+  );
+  self.clients.claim();
+});
+self.addEventListener("fetch", e => {
+  e.respondWith(
+    caches.match(e.request).then(r => r || fetch(e.request))
+      .catch(() => caches.match("/offline.html"))
   );
 });
