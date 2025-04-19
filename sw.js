@@ -1,15 +1,15 @@
 const CACHE_NAME = 'visiting-card-cache-v1';
 const urlsToCache = [
   '/',
-  '/index.html',
-  '/offline.html',
-  '/styles.css',
-  '/app.js',
-  '/images/photo.jpg',
-  '/images/phone-qr.png',
-  '/images/telegram-qr.png',
-  '/images/vk-qr.png',
-  '/images/icon-192.png'
+  '/check/index.html',
+  '/check/offline.html',
+  '/check/styles.css',
+  '/check/app.js',
+  '/check/images/photo.jpg',
+  '/check/images/phone-qr.png',
+  '/check/images/telegram-qr.png',
+  '/check/images/vk-qr.png',
+  '/check/images/icon-192.png'
 ];
 
 self.addEventListener("install", e => {
